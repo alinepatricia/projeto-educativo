@@ -1,4 +1,6 @@
-const grid = document.querySelector('grid');
+const grid = document.querySelector('.grid');
+const spanPlayer = document.querySelector('.player');
+const timer = document.querySelector('.timer');
 
 const cards = [
     'a',
@@ -8,7 +10,7 @@ const cards = [
     'u',
 ];
 
-const createElement = (tag, className) =>{
+const createElement = (tag, className) => {
     const element = document.createElement(tag);
     element.className = className;
     return element;
@@ -18,13 +20,13 @@ let firstCard = '';
 let secondCard = '';
 
 const checkEndGame = () => {
-    const disableCards = document.querySelector('disabled-card');
+    const disableCards = document.querySelectorAll ('disabled-card');
 
     if (disableCards.lenght === 20) {
-        alert('Parabéns! Você Ganhou!!');
+        alert('Parabéns, ${spanPlayer.innerHTML}! Seu tempo foi de: ${timer.innerHTML}');
     }
 }
-
+r
 const checkCards = () => {
     const firstCards = firstCard.getAttribute('data-cards');
     const secondCards = secondCard.getAttribute('data-cards');
@@ -67,34 +69,47 @@ const revealCard = ({ target }) => {
 
         checkCards();
     }
-
-    target.parentNode.classList.add('reveal-card');
 }
 
 const createCard = (cards) => {
-    const card = document.createElement('span', 'card');
-    const front = document.createElement('span', 'face front');
-    const back = document.createElement('span', 'face back');
 
-    front.style.backgroundImage = `url('../images/${cards}.png')`;
+  const card = createElement('div', 'card');
+  const front = createElement('div', 'face front');
+  const back = createElement('div', 'face back');
 
-    card.appendChild(front);
-    card.appendChild(back);
+  front.style.backgroundImage = `url('../images/${cards}.png')`;
 
-    card.addEventListener('click', revealCard);
+  card.appendChild(front);
+  card.appendChild(back);
 
-    return card;
+  card.addEventListener('click', revealCard);
+  card.setAttribute('data-cards', cards)
+
+  return card;
 }
 
 const loadGame = () => {
-
-    const duplicateCards = [ ...cards, ...cards ];
-
-    const shuffledArray = duplicateCards.sort( () => Math.random() - 0,5);
-
+    const duplicateCards = [...cards, ...cards];
+  
+    const shuffledArray = duplicateCards.sort(() => Math.random() - 0.5);
+  
     shuffledArray.forEach((cards) => {
-        const card = createCard(cards);
-        grid.appendChild(card);
+      const card = createCard(cards);
+      grid.appendChild(card);
     });
-}
-loadGame();
+  }
+  
+  const startTimer = () => {
+  
+    this.loop = setInterval(() => {
+      const currentTime = +timer.innerHTML;
+      timer.innerHTML = currentTime + 1;
+    }, 1000);
+  
+  }
+  
+  window.onload = () => {
+    spanPlayer.innerHTML = localStorage.getItem('player');
+    startTimer();
+    loadGame();
+  }
